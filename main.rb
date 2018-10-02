@@ -23,13 +23,14 @@ LATEST_FILE = "/var/log/minecraft-server/latest.log"
 OFFENSES = /Unbanned|a server operator/
 
 def watch_for(file, pattern)
+  # Replace -n0 with -n+1 if you want to read from the beginning of file
   puts "watching #{file}..."
-  f = File.open(file, "r")
-  f.seek(0, IO::SEEK_END)
-  while true do
+  f = IO.popen(%W[tail -f -n0 #{file}])
+  loop do
     select([f])
-    line = f.gets
-    ban(violators(line)) if line=~pattern
+    while line = f.gets
+      ban(violators(line)) if line =~ pattern
+    end
   end
 end
 
@@ -37,11 +38,11 @@ def violators(line)
   if line =~ /Unbanned/
     offender = line[/.*\[(.*)\]/,1].sub(':','').split()[0]
     target = line[/.*\[(.*)\]/,1].sub(':','').split()[-1]
-    return {"violation"=>{ "type"=> "unban", "offender"=>offender, "target"=>target}}
+    return {"violation"=>{ "type"=> "unban", "offender"=>offender, "target"=>target}} unless offender =~ /[Rr]con/ # RCon can do stuff
   elsif line=~ /a server operator/
     offender = line[/.*\[(.*)\]/,1].sub(':','').split()[0]
     target = line[/.*\[(.*)\]/,1].sub(':','').split()[2]
-    return {"violation"=>{ "type"=>"admin", "offender"=>offender, "target"=>target}}
+    return {"violation"=>{ "type"=>"admin", "offender"=>offender, "target"=>target}} unless offener =~ /[Rr]on/
   else
     puts "unknown violation pattern: #{line}"
   end
