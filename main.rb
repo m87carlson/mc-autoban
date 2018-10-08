@@ -8,8 +8,8 @@ require 'file-tail'
 #
 # watch for patterns:
 #
-#[15:40:10] [Server thread/INFO]: [treesnake163: Unbanned canoo30]
-#[15:44:19] [Server thread/INFO]: [treesnake163: Made canoo30 a server operator]
+#[15:40:10] [Server thread/INFO]: [usera: Unbanned userb]
+#[15:44:19] [Server thread/INFO]: [usera: Made userb a server operator]
 #
 # { "violation" => { "type": "unban", "offender": "usera", "target": "userb" } }
 RCON_PASS=ENV['RCON_PASS']
